@@ -51,7 +51,7 @@ Stejně tak si ve skriptech uprav:
 
 1. Naklonuj repo a nasaď skripty:
    ```bash
-   git clone https://github.com/UZIVATEL/mac-setup.git
+   git clone https://github.com/vitkysilko/moonlight-macos-automation.git
    mkdir -p ~/scripts
    cp mac-setup/scripts/*.sh ~/scripts/
    chmod +x ~/scripts/*.sh
