@@ -1,12 +1,29 @@
 #!/bin/bash
+# Solo rezim: MSI stream v plnem rozliseni na vestavene Retine.
 
-# MSI stream na vestavěné Retině
+LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
+
 /Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 30000 "MSI" "Desktop" &
 
-# počkej na připojení
-sleep 8
+# --- pockej az realne nabehne obraz ---
+LOG=""
+for i in $(seq 1 40); do
+  CANDIDATE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
+  if [ -n "$CANDIDATE" ] && [ "$CANDIDATE" != "$LOG_BEFORE" ]; then
+    LOG="$CANDIDATE"
+    break
+  fi
+  sleep 0.5
+done
+
+for i in $(seq 1 180); do
+  grep -q "Received first video packet" "$LOG" 2>/dev/null && break
+  sleep 0.5
+done
 
 MSI_PID=$(pgrep -f "Moonlight.app/Contents/MacOS/Moonlight stream")
 
 # fullscreen
-osascript -e 'tell application "System Events" to set frontmost of (first process whose unix id is '"$MSI_PID"') to true' -e 'delay 0.3' -e 'tell application "System Events" to keystroke "x" using {control down, option down, shift down}'
+osascript -e 'tell application "System Events" to set frontmost of (first process whose unix id is '"$MSI_PID"') to true' \
+          -e 'delay 0.3' \
+          -e 'tell application "System Events" to keystroke "x" using {control down, option down, shift down}'
