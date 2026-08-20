@@ -1,4 +1,4 @@
-# mac-setup
+# moonlight-macos-automation
 
 Automatizace Moonlight streamování na macOS — skripty, zkratky a návody pro rychlou obnovu po reinstalaci Macu.
 
@@ -7,22 +7,25 @@ Automatizace Moonlight streamování na macOS — skripty, zkratky a návody pro
 Jedno kliknutí v Docku místo pěti ručních kroků:
 
 - 🟢 **OpenMoonlight** — vypne AWDL (fix microstutteringu na Wi-Fi), spustí dva Moonlight streamy s přesnými parametry, rozmístí okna na monitory a přepne je do fullscreenu
-- 🔵 **OpenMoonlightSolo** — jeden stream na vestavěném displeji (režim bez externího monitoru)
+- 🔵 **OpenMoonlightSolo** — jeden stream v plném rozlišení na vestavěném displeji (režim bez externího monitoru)
+- 🟡 **OpenMoonlightSoloLight** — totéž v polovičním rozlišení (1728x1080) pro slabší síť nebo úsporu výkonu; na Retině zůstává obraz ostrý, protože jde přesně o polovinu nativního rozlišení
 - 🔴 **CloseMoonlight** — ukončí streamy a vrátí AWDL (AirDrop, Handoff) do normálu
 
 ## Struktura repa
 
 ```
-mac-setup/
+moonlight-macos-automation/
 ├── README.md            ← tento soubor
+├── LICENSE
 ├── docs/
 │   └── moonlight-macos-setup.md   ← kompletní návod krok za krokem
 ├── scripts/
 │   ├── awdl-off.sh      ← hlídací smyčka držící awdl0 vypnuté
 │   ├── awdl-on.sh       ← ukončení smyčky, návrat AWDL
-│   ├── moonlight-start.sh       ← oba streamy (dva monitory)
-│   ├── moonlight-start-solo.sh  ← sólo režim (jen MacBook)
-│   └── moonlight-stop.sh        ← ukončení streamů
+│   ├── moonlight-start.sh            ← oba streamy (dva monitory)
+│   ├── moonlight-start-solo.sh       ← sólo režim, plné rozlišení
+│   ├── moonlight-start-solo-light.sh ← sólo režim, poloviční rozlišení
+│   └── moonlight-stop.sh             ← ukončení streamů
 └── shortcuts/
     └── odkazy.md / *.shortcut   ← exportované zkratky nebo iCloud odkazy
 ```
@@ -53,7 +56,7 @@ Stejně tak si ve skriptech uprav:
    ```bash
    git clone https://github.com/vitkysilko/moonlight-macos-automation.git
    mkdir -p ~/scripts
-   cp mac-setup/scripts/*.sh ~/scripts/
+   cp moonlight-macos-automation/scripts/*.sh ~/scripts/
    chmod +x ~/scripts/*.sh
    ```
 2. Naimportuj zkratky ze `shortcuts/` a uprav v nich cesty (viz výše).
