@@ -11,6 +11,18 @@ Jedno kliknutí v Docku místo pěti ručních kroků:
 - 🟡 **OpenMoonlightSoloLight** — totéž v polovičním rozlišení (1728x1080) pro slabší síť nebo úsporu výkonu; na Retině zůstává obraz ostrý, protože jde přesně o polovinu nativního rozlišení
 - 🔴 **CloseMoonlight** — ukončí streamy a vrátí AWDL (AirDrop, Handoff) do normálu
 
+Skripty **nečekají pevný počet sekund** — sledují Moonlight log a fullscreen přepnou přesně ve chvíli, kdy dorazí první video paket. Doba připojení se totiž liší podle sítě (9 s lokálně vs. 24 s přes VPN) a pevná prodleva to nikdy netrefí spolehlivě.
+
+## Jak je to zapojené
+
+Zkratky volají skripty **přímo z tohoto repa** (žádná kopie jinde na disku — jediné místo pravdy):
+
+```
+zkratka v Docku → bash ~/moonlight-macos-automation/scripts/<skript>.sh
+```
+
+Workflow pro úpravy: **uprav skript v repu → otestuj z Docku → `git commit` + `git push`.** Commituje se až ověřený stav; rozbitou úpravu vrátí `git checkout -- <soubor>`.
+
 ## Struktura repa
 
 ```
@@ -32,16 +44,16 @@ moonlight-macos-automation/
 
 ## ⚠️ Než to použiješ: uprav si cesty
 
-Zkratky i návod počítají se skripty v domovské složce konkrétního uživatele:
+Zkratky volají skripty na absolutní cestě konkrétního uživatele:
 
 ```
-/Users/vitkysilko/scripts/...
+/Users/vitkysilko/moonlight-macos-automation/scripts/...
 ```
 
 Po importu zkratek si v každé akci **Run Shell Script** přepiš cestu na svoje uživatelské jméno (zjistíš ho příkazem `whoami`), např.:
 
 ```
-bash /Users/TVOJE_JMENO/scripts/moonlight-start.sh
+bash /Users/TVOJE_JMENO/moonlight-macos-automation/scripts/moonlight-start.sh
 ```
 
 Stejně tak si ve skriptech uprav:
@@ -52,12 +64,10 @@ Stejně tak si ve skriptech uprav:
 
 ## Instalace ve zkratce
 
-1. Naklonuj repo a nasaď skripty:
+1. Naklonuj repo do domovské složky a udělej skripty spustitelnými:
    ```bash
-   git clone https://github.com/vitkysilko/moonlight-macos-automation.git
-   mkdir -p ~/scripts
-   cp moonlight-macos-automation/scripts/*.sh ~/scripts/
-   chmod +x ~/scripts/*.sh
+   git clone https://github.com/vitkysilko/moonlight-macos-automation.git ~/moonlight-macos-automation
+   chmod +x ~/moonlight-macos-automation/scripts/*.sh
    ```
 2. Naimportuj zkratky ze `shortcuts/` a uprav v nich cesty (viz výše).
 3. Přidej zkratky do Docku a **povol oprávnění** — bez toho nebude fungovat přesun oken ani fullscreen:
