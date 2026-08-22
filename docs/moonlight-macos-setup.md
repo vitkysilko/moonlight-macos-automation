@@ -98,27 +98,6 @@ MSI_PID=$(pgrep -f "Moonlight.app/Contents/MacOS/Moonlight stream")
 osascript -e 'tell application "System Events" to set frontmost of (first process whose unix id is '"$MSI_PID"') to true' -e 'delay 0.3' -e 'tell application "System Events" to keystroke "x" using {control down, option down, shift down}'
 ```
 
-### ~/scripts/moonlight-start-solo-light.sh — sólo režim v polovičním rozlišení
-
-Odlehčená varianta pro slabší připojení nebo úsporu výkonu. Rozlišení 1728x1080 je přesně polovina nativních 3456x2160, takže se na Retině škáluje celočíselně a obraz zůstává ostrý.
-
-```bash
-#!/bin/bash
-
-# MSI stream na vestavěné Retině
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 1728x1080 --fps 60 --bitrate 30000 "MSI" "Desktop" &
-
-# počkej na připojení
-sleep 15
-
-MSI_PID=$(pgrep -f "Moonlight.app/Contents/MacOS/Moonlight stream")
-
-# fullscreen
-osascript -e 'tell application "System Events" to set frontmost of (first process whose unix id is '"$MSI_PID"') to true' -e 'delay 0.3' -e 'tell application "System Events" to keystroke "x" using {control down, option down, shift down}'
-```
-
-Pozn.: delší `sleep 15` (oproti 8 s u ostatních skriptů) dává hostu víc času na přepnutí rozlišení, než se pošle zkratka pro fullscreen. Když se fullscreen občas nezapne, hodnotu je potřeba zvednout.
-
 ### ~/scripts/moonlight-stop.sh — ukončení streamů
 
 ```bash
@@ -150,13 +129,9 @@ Bez CLI přepínačů se použije nastavení z GUI — pozor, obě kopie appky s
 1. **Run Shell Script**, Run as Administrator ✅: `bash /Users/JMENO/scripts/awdl-off.sh`
 2. **Run Shell Script**, bez administrátora: `bash /Users/JMENO/scripts/moonlight-start.sh`
 
-### OpenMoonlightSolo (jen MacBook, plné rozlišení)
+### OpenMoonlightSolo (jen MacBook)
 1. Stejná admin akce s `awdl-off.sh`
 2. `bash /Users/JMENO/scripts/moonlight-start-solo.sh` (bez admina)
-
-### OpenMoonlightSoloLight (jen MacBook, poloviční rozlišení)
-1. Stejná admin akce s `awdl-off.sh`
-2. `bash /Users/JMENO/scripts/moonlight-start-solo-light.sh` (bez admina)
 
 ### CloseMoonlight
 1. **Run Shell Script**, bez administrátora: `bash /Users/JMENO/scripts/moonlight-stop.sh`
@@ -170,14 +145,14 @@ Potřebná oprávnění v **Nastavení systému → Soukromí a zabezpečení**:
 
 | Oprávnění | Kdo ho potřebuje | Na co |
 |---|---|---|
-| **Automation → System Events** | každá dock appka (OpenMoonlight.app, OpenMoonlightSolo.app, …) | přesun oken |
+| **Automation → System Events** | každá dock appka (OpenMoonlight.app, OpenMoonlightSolo.app) | přesun oken |
 | **Device Control and Data Access** (dříve Accessibility) | dock appky, které posílají klávesy | keystroke pro fullscreen |
 
 Symptomy chybějících oprávnění:
 - `osascript is not allowed to send keystrokes (1002)` → chybí Device Control and Data Access pro danou dock appku. Přidat přes **+**, cesta `~/Applications` (v dialogu Cmd+Shift+G).
 - Okna se nepřesouvají → chybí Automation → System Events.
 
-**Pozor:** po smazání a novém vytvoření dock appky (např. kvůli změně ikony) vzniká nová aplikace s čistými oprávněními — celé se to musí povolit znovu. Totéž platí pro každou nově přidanou variantu zkratky.
+**Pozor:** po smazání a novém vytvoření dock appky (např. kvůli změně ikony) vzniká nová aplikace s čistými oprávněními — celé se to musí povolit znovu.
 
 ## 6. Vlastní ikony
 
@@ -210,7 +185,6 @@ Pro automatické přepínání existuje utilita **SetDPI** (Windows CLI), jde na
 |---|---|
 | Okna neskáčou na místo | Oprávnění Automation → System Events pro spouštěcí proces |
 | Chyba 1002 (keystrokes) | Device Control and Data Access pro dock appku |
-| Fullscreen se občas nezapne | Zvýšit `sleep` ve skriptu — host nestihl přepnout rozlišení |
 | Po aktualizaci macOS přestaly fungovat přesuny | macOS občas resetuje oprávnění — zkontrolovat a znovu povolit |
 | Host nenalezen | Ověřit přesný název: `Moonlight list "NAZEV"` |
 | Fungovalo z aplikace Zkratky, ale ne z Docku/menu baru | Každý spouštěcí kontext = jiný proces = jiná oprávnění |
@@ -220,7 +194,7 @@ Pro automatické přepínání existuje utilita **SetDPI** (Windows CLI), jde na
 
 1. Nainstalovat Moonlight, vytvořit kopii `Moonlight2.app`, spárovat oba hosty.
 2. Obnovit `~/scripts` (ze zálohy/gitu), `chmod +x ~/scripts/*.sh`.
-3. Znovu vytvořit zkratky (nebo je mít exportované — v aplikaci Zkratky přetažením dlaždice do Finderu, případně přes Sdílet → Kopírovat odkaz na iCloud).
+3. Znovu vytvořit tři zkratky (nebo je mít exportované — v aplikaci Zkratky: pravý klik → Sdílet → Uložit soubor, vznikne `.shortcut`).
 4. Add to Dock, nastavit ikony.
 5. Povolit oprávnění (Automation + Device Control and Data Access) pro dock appky.
-6. Otestovat všechny režimy + Close.
+6. Otestovat oba režimy + Close.

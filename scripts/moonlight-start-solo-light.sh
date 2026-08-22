@@ -3,7 +3,7 @@
 
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
 
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 1728x1080 --fps 60 --bitrate 30000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 1728x1080 --fps 60 --bitrate 3000 "MSI" "Desktop" &
 
 # --- pockej az realne nabehne obraz ---
 LOG=""
