@@ -2,7 +2,7 @@
 
 Kompletní návod na automatizaci Moonlight streamování na Macu — vypnutí AWDL (fix microstutteringu), spuštění streamů, automatické rozmístění na monitory, fullscreen a ovládání přes ikony v Docku.
 
-**Prostředí:** MacBook Pro 16" M1, externí monitor 3440x1440 (nad Retinou), dva hosty: „MSI" (Desktop) a „Apollo2" (Virtual Display, Apollo/SudoVDA). Dvě kopie klienta: `/Applications/Moonlight.app` a `/Applications/Moonlight2.app` (kvůli dvěma současným instancím).
+**Prostředí:** MacBook Pro 16" M1, externí monitor nad Retinou (3440x1440, případně 2560x1440), dva hosty: „MSI" (Desktop) a „Apollo2" (Virtual Display, Apollo/SudoVDA). Dvě kopie klienta: `/Applications/Moonlight.app` a `/Applications/Moonlight2.app` (kvůli dvěma současným instancím).
 
 **Kde žijí skripty:** přímo v tomto repu (`~/moonlight-macos-automation/scripts/`) a zkratky je odsud rovnou volají. Žádná kopie jinde na disku — jediné místo pravdy. Workflow pro úpravy: uprav → otestuj z Docku → commit + push (commituje se až ověřený stav; rozbitou úpravu vrátí `git checkout -- <soubor>`).
 
@@ -123,6 +123,17 @@ Klíčové triky:
 - **Streamy se spouštějí postupně, ne souběžně.** Detekce hledá nejnovější logfile, a při současném startu obou klientů by se dva nové logy popletly. Trvá to o pár sekund déle, ale je to spolehlivé.
 - `--bitrate` je v Kbps (30 Mbps = 30000).
 
+### scripts/moonlight-start-2k.sh — oba streamy, horní monitor 2560x1440
+
+Varianta pro menší horní monitor a slabší síť. Skript je identický s `moonlight-start.sh`, liší se jen parametry streamů:
+
+```bash
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &
+/Applications/Moonlight2.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 7000 "Apollo2" "Virtual Display" &
+```
+
+Souřadnice `{100, -1400}` platí beze změny — monitor 2560x1440 má stejnou výšku 1440 bodů.
+
 ### scripts/moonlight-start-solo.sh — jen MSI na Retině (bez ext. monitoru)
 
 ```bash
@@ -167,6 +178,18 @@ Skript je identický s `moonlight-start-solo.sh`, jen s jiným rozlišením:
 /Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 1728x1080 --fps 60 --bitrate 30000 "MSI" "Desktop" &
 ```
 
+### scripts/moonlight-start-solo1440p.sh — jen MSI na horním monitoru, Retina pro macOS
+
+Když chci stream jen na externím monitoru a na Retině normálně pracovat v macOS. Vychází z `moonlight-start-solo.sh`, liší se rozlišením a přesunem okna nahoru před fullscreenem:
+
+```bash
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 30000 "MSI" "Desktop" &
+# ... čekání na první video paket ...
+osascript -e 'tell application "System Events" to tell (first process whose unix id is '"$MSI_PID"') to set position of window 1 to {100, -1400}'
+```
+
+Bez přesunu by se fullscreen zapnul na monitoru, kde macOS okno zrovna otevře — nedeterministické.
+
 ### scripts/moonlight-stop.sh — ukončení streamů
 
 ```bash
@@ -197,6 +220,10 @@ Zkratky volají skripty přímo z repa. Cesty s `JMENO` nahraď svým uživatels
 1. **Run Shell Script**, Run as Administrator ✅: `bash /Users/JMENO/moonlight-macos-automation/scripts/awdl-off.sh`
 2. **Run Shell Script**, bez administrátora: `bash /Users/JMENO/moonlight-macos-automation/scripts/moonlight-start.sh`
 
+### OpenMoonlight2K (horní monitor 2560x1440)
+1. Stejná admin akce s `awdl-off.sh`
+2. `bash /Users/JMENO/moonlight-macos-automation/scripts/moonlight-start-2k.sh` (bez admina)
+
 ### OpenMoonlightSolo (jen MacBook, plné rozlišení)
 1. Stejná admin akce s `awdl-off.sh`
 2. `bash /Users/JMENO/moonlight-macos-automation/scripts/moonlight-start-solo.sh` (bez admina)
@@ -204,6 +231,10 @@ Zkratky volají skripty přímo z repa. Cesty s `JMENO` nahraď svým uživatels
 ### OpenMoonlightSoloLight (jen MacBook, poloviční rozlišení)
 1. Stejná admin akce s `awdl-off.sh`
 2. `bash /Users/JMENO/moonlight-macos-automation/scripts/moonlight-start-solo-light.sh` (bez admina)
+
+### OpenMoonlightSolo1440p (jen horní monitor, Retina pro macOS)
+1. Stejná admin akce s `awdl-off.sh`
+2. `bash /Users/JMENO/moonlight-macos-automation/scripts/moonlight-start-solo1440p.sh` (bez admina)
 
 ### CloseMoonlight
 1. **Run Shell Script**, bez administrátora: `bash /Users/JMENO/moonlight-macos-automation/scripts/moonlight-stop.sh`
@@ -217,7 +248,7 @@ Potřebná oprávnění v **Nastavení systému → Soukromí a zabezpečení**:
 
 | Oprávnění | Kdo ho potřebuje | Na co |
 |---|---|---|
-| **Automation → System Events** | každá dock appka (OpenMoonlight.app, OpenMoonlightSolo.app, …) | přesun oken |
+| **Automation → System Events** | každá dock appka (OpenMoonlight.app, OpenMoonlight2K.app, OpenMoonlightSolo.app, OpenMoonlightSolo1440p.app, …) | přesun oken |
 | **Device Control and Data Access** (dříve Accessibility) | dock appky, které posílají klávesy | keystroke pro fullscreen |
 
 Symptomy chybějících oprávnění:

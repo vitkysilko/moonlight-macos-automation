@@ -7,7 +7,9 @@ Automatizace Moonlight streamování na macOS — skripty, zkratky a návody pro
 Jedno kliknutí v Docku místo pěti ručních kroků:
 
 - 🟢 **OpenMoonlight** — vypne AWDL (fix microstutteringu na Wi-Fi), spustí dva Moonlight streamy s přesnými parametry, rozmístí okna na monitory a přepne je do fullscreenu
+- 🟣 **OpenMoonlight2K** — totéž pro menší horní monitor 2560x1440 a slabší síť (MSI 10 Mbps, Apollo2 7 Mbps)
 - 🔵 **OpenMoonlightSolo** — jeden stream v plném rozlišení na vestavěném displeji (režim bez externího monitoru)
+- 🟠 **OpenMoonlightSolo1440p** — jen MSI stream 2560x1440 na horním monitoru, Retina zůstává pro macOS
 - 🟡 **OpenMoonlightSoloLight** — totéž v polovičním rozlišení (1728x1080) pro slabší síť nebo úsporu výkonu; na Retině zůstává obraz ostrý, protože jde přesně o polovinu nativního rozlišení
 - 🔴 **CloseMoonlight** — ukončí streamy a vrátí AWDL (AirDrop, Handoff) do normálu
 
@@ -35,8 +37,10 @@ moonlight-macos-automation/
 │   ├── awdl-off.sh      ← hlídací smyčka držící awdl0 vypnuté
 │   ├── awdl-on.sh       ← ukončení smyčky, návrat AWDL
 │   ├── moonlight-start.sh            ← oba streamy (dva monitory)
+│   ├── moonlight-start-2k.sh         ← oba streamy, horní monitor 2560x1440
 │   ├── moonlight-start-solo.sh       ← sólo režim, plné rozlišení
 │   ├── moonlight-start-solo-light.sh ← sólo režim, poloviční rozlišení
+│   ├── moonlight-start-solo1440p.sh  ← sólo režim na horním monitoru, Retina pro macOS
 │   └── moonlight-stop.sh             ← ukončení streamů
 └── shortcuts/
     └── odkazy.md / *.shortcut   ← exportované zkratky nebo iCloud odkazy
@@ -60,7 +64,7 @@ Stejně tak si ve skriptech uprav:
 
 - **názvy hostů** („MSI", „Apollo2") podle toho, jak se jmenují tvoje počítače v Moonlightu (ověříš: `/Applications/Moonlight.app/Contents/MacOS/Moonlight list "NAZEV"`),
 - **rozlišení, fps a bitrate** podle svých monitorů a sítě,
-- **souřadnice oken** v `moonlight-start.sh` podle uspořádání svých displejů (monitor nad hlavním má záporné Y).
+- **souřadnice oken** v `moonlight-start.sh`, `moonlight-start-2k.sh` a `moonlight-start-solo1440p.sh` podle uspořádání svých displejů (monitor nad hlavním má záporné Y).
 
 ## Instalace ve zkratce
 
