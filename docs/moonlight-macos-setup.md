@@ -175,7 +175,7 @@ Odlehčená varianta pro slabší připojení nebo úsporu výkonu. Rozlišení 
 Skript je identický s `moonlight-start-solo.sh`, jen s jiným rozlišením:
 
 ```bash
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 1728x1080 --fps 60 --bitrate 30000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 1728x1080 --fps 60 --bitrate 3000 "MSI" "Desktop" &
 ```
 
 ### scripts/moonlight-start-solo1440p.sh — jen MSI na horním monitoru, Retina pro macOS
