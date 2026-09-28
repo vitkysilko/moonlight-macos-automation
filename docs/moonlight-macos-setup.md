@@ -100,7 +100,7 @@ fullscreen() {
 
 # === 1) MSI stream - horni monitor ===
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 3440x1440 --fps 60 --bitrate 30000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --no-absolute-mouse --display-mode windowed --resolution 3440x1440 --fps 60 --bitrate 30000 "MSI" "Desktop" &
 cekej_na_obraz "$LOG_BEFORE"
 
 MSI_PID=$(pgrep -f "Moonlight.app/Contents/MacOS/Moonlight stream")
@@ -128,7 +128,7 @@ Klíčové triky:
 Varianta pro menší horní monitor a slabší síť. Skript je identický s `moonlight-start.sh`, liší se jen parametry streamů:
 
 ```bash
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --no-absolute-mouse --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &
 /Applications/Moonlight2.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 7000 "Apollo2" "Virtual Display" &
 ```
 

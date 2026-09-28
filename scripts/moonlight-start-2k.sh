@@ -34,7 +34,7 @@ fullscreen() {
 
 # === 1) MSI stream - horni monitor ===
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --no-absolute-mouse --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &
 cekej_na_obraz "$LOG_BEFORE"
 
 MSI_PID=$(pgrep -f "Moonlight.app/Contents/MacOS/Moonlight stream")
@@ -49,3 +49,10 @@ cekej_na_obraz "$LOG_BEFORE"
 AP2_PID=$(pgrep -f "Moonlight2.app/Contents/MacOS/Moonlight stream")
 osascript -e 'tell application "System Events" to tell (first process whose unix id is '"$AP2_PID"') to set position of window 1 to {100, 100}'
 fullscreen "$AP2_PID"
+
+
+# === 3) MSI stream: relativni mys - aktivovat okno a zachytit mys (Ctrl+Alt+Shift+Z) ===
+sleep 1
+osascript -e 'tell application "System Events" to set frontmost of (first process whose unix id is '"$MSI_PID"') to true' \
+          -e 'delay 0.3' \
+          -e 'tell application "System Events" to keystroke "z" using {control down, option down, shift down}'
