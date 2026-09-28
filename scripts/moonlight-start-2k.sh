@@ -34,7 +34,7 @@ fullscreen() {
 
 # === 1) MSI stream - horni monitor ===
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &
 cekej_na_obraz "$LOG_BEFORE"
 
 MSI_PID=$(pgrep -f "Moonlight.app/Contents/MacOS/Moonlight stream")
@@ -43,7 +43,7 @@ fullscreen "$MSI_PID"
 
 # === 2) Apollo2 stream - Retina ===
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
-/Applications/Moonlight2.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 7000 "Apollo2" "Virtual Display" &
+/Applications/Moonlight2.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 7000 "Apollo2" "Virtual Display" &
 cekej_na_obraz "$LOG_BEFORE"
 
 AP2_PID=$(pgrep -f "Moonlight2.app/Contents/MacOS/Moonlight stream")

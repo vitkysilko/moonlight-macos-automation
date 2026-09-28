@@ -100,7 +100,7 @@ fullscreen() {
 
 # === 1) MSI stream - horni monitor ===
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 3440x1440 --fps 60 --bitrate 30000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 3440x1440 --fps 60 --bitrate 30000 "MSI" "Desktop" &
 cekej_na_obraz "$LOG_BEFORE"
 
 MSI_PID=$(pgrep -f "Moonlight.app/Contents/MacOS/Moonlight stream")
@@ -109,7 +109,7 @@ fullscreen "$MSI_PID"
 
 # === 2) Apollo2 stream - Retina ===
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
-/Applications/Moonlight2.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 10000 "Apollo2" "Virtual Display" &
+/Applications/Moonlight2.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 10000 "Apollo2" "Virtual Display" &
 cekej_na_obraz "$LOG_BEFORE"
 
 AP2_PID=$(pgrep -f "Moonlight2.app/Contents/MacOS/Moonlight stream")
@@ -128,8 +128,8 @@ Klíčové triky:
 Varianta pro menší horní monitor a slabší síť. Skript je identický s `moonlight-start.sh`, liší se jen parametry streamů:
 
 ```bash
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &
-/Applications/Moonlight2.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 7000 "Apollo2" "Virtual Display" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &
+/Applications/Moonlight2.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 7000 "Apollo2" "Virtual Display" &
 ```
 
 Souřadnice `{100, -1400}` platí beze změny — monitor 2560x1440 má stejnou výšku 1440 bodů.
@@ -142,7 +142,7 @@ Souřadnice `{100, -1400}` platí beze změny — monitor 2560x1440 má stejnou 
 
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
 
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 30000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 30000 "MSI" "Desktop" &
 
 # --- pockej az realne nabehne obraz ---
 LOG=""
@@ -175,7 +175,7 @@ Odlehčená varianta pro slabší připojení nebo úsporu výkonu. Rozlišení 
 Skript je identický s `moonlight-start-solo.sh`, jen s jiným rozlišením:
 
 ```bash
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 1728x1080 --fps 60 --bitrate 3000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 1728x1080 --fps 60 --bitrate 3000 "MSI" "Desktop" &
 ```
 
 ### scripts/moonlight-start-solo1440p.sh — jen MSI na horním monitoru, Retina pro macOS
@@ -183,7 +183,7 @@ Skript je identický s `moonlight-start-solo.sh`, jen s jiným rozlišením:
 Když chci stream jen na externím monitoru a na Retině normálně pracovat v macOS. Vychází z `moonlight-start-solo.sh`, liší se rozlišením a přesunem okna nahoru před fullscreenem:
 
 ```bash
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 30000 "MSI" "Desktop" &
+/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 30000 "MSI" "Desktop" &
 # ... čekání na první video paket ...
 osascript -e 'tell application "System Events" to tell (first process whose unix id is '"$MSI_PID"') to set position of window 1 to {100, -1400}'
 ```
