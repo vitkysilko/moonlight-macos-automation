@@ -1,32 +1,9 @@
 #!/bin/bash
 # Solo rezim: MSI stream v plnem rozliseni na vestavene Retine.
+# Rychla verze: Moonlight startuje rovnou ve fullscreenu (borderless = pod vyrezem),
+# skript na nic neceka a hned konci -> zadny AppleScript, zadne cekani na log.
 
 # === 0) nejdriv natvrdo ukoncit pripadne bezici streamy (napr. po zavreni vika) ===
 bash "$(dirname "$0")/moonlight-stop.sh"
 
-LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
-
-/Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 30000 "MSI" "Desktop" &
-
-# --- pockej az realne nabehne obraz ---
-LOG=""
-for i in $(seq 1 40); do
-  CANDIDATE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
-  if [ -n "$CANDIDATE" ] && [ "$CANDIDATE" != "$LOG_BEFORE" ]; then
-    LOG="$CANDIDATE"
-    break
-  fi
-  sleep 0.5
-done
-
-for i in $(seq 1 180); do
-  grep -q "Received first video packet" "$LOG" 2>/dev/null && break
-  sleep 0.5
-done
-
-MSI_PID=$(pgrep -f "Moonlight.app/Contents/MacOS/Moonlight stream")
-
-# fullscreen
-osascript -e 'tell application "System Events" to set frontmost of (first process whose unix id is '"$MSI_PID"') to true' \
-          -e 'delay 0.3' \
-          -e 'tell application "System Events" to keystroke "x" using {control down, option down, shift down}'
+nohup /Applications/Moonlight.app/Contents/MacOS/Moonlight stream --no-absolute-mouse --no-quit-after --display-mode borderless --resolution 3456x2160 --fps 60 --bitrate 30000 "MSI" "Desktop" >/dev/null 2>&1 &
