@@ -1,6 +1,9 @@
 #!/bin/bash
 # Spusti oba streamy, pocka az realne nabehne obraz, rozmisti okna a prepne do fullscreenu.
 
+# === 0) nejdriv natvrdo ukoncit pripadne bezici streamy (napr. po zavreni vika) ===
+bash "$(dirname "$0")/moonlight-stop.sh"
+
 # --- funkce: pocka na novy Moonlight log a v nem na prvni video paket ---
 cekej_na_obraz() {
   local BEFORE="$1"

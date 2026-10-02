@@ -1,6 +1,9 @@
 #!/bin/bash
 # Solo rezim 1440p: MSI stream 2560x1440 jen na hornim monitoru, Retina zustava pro macOS.
 
+# === 0) nejdriv natvrdo ukoncit pripadne bezici streamy (napr. po zavreni vika) ===
+bash "$(dirname "$0")/moonlight-stop.sh"
+
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
 
 /Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 2560x1440 --fps 60 --bitrate 10000 "MSI" "Desktop" &

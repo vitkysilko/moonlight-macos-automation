@@ -1,6 +1,9 @@
 #!/bin/bash
 # Solo rezim: MSI stream v plnem rozliseni na vestavene Retine.
 
+# === 0) nejdriv natvrdo ukoncit pripadne bezici streamy (napr. po zavreni vika) ===
+bash "$(dirname "$0")/moonlight-stop.sh"
+
 LOG_BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
 
 /Applications/Moonlight.app/Contents/MacOS/Moonlight stream --absolute-mouse --display-mode windowed --resolution 3456x2160 --fps 60 --bitrate 30000 "MSI" "Desktop" &

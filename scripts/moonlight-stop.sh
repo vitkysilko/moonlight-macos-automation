@@ -1,3 +1,4 @@
 #!/bin/bash
-# ukonči oba streamy
-pkill -f "Contents/MacOS/Moonlight stream"
+# Ukonci vsechny bezici streamy natvrdo (kill -9), bez cekani.
+pkill -9 -f "Contents/MacOS/Moonlight stream"
+exit 0
