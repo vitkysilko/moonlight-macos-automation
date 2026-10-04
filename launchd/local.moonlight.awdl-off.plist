@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- AWDL trvale vypnute: systemova sluzba (root) kazdou sekundu vypne awdl0, kdyz ho macOS zapne.
+     Instalace: kopie do /Library/LaunchDaemons (root:wheel 644) + launchctl bootstrap system. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.moonlight.awdl-off</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-c</string>
+    <string>while true; do /sbin/ifconfig awdl0 | /usr/bin/grep -q "status: active" &amp;&amp; /sbin/ifconfig awdl0 down; sleep 1; done</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+</dict>
+</plist>
