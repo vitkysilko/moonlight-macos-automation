@@ -10,9 +10,28 @@ Kompletní návod na automatizaci Moonlight streamování na Macu — vypnutí A
 
 ## 1. Proč vypínat AWDL
 
-Rozhraní `awdl0` (Apple Wireless Direct Link — AirDrop, Handoff, Sidecar) periodicky skenuje éter a způsobuje microstuttering ve streamu přes Wi-Fi. Řešení: `sudo ifconfig awdl0 down`. Problém: macOS si ho samo znovu zapíná, proto běží hlídací smyčka na pozadí.
+Rozhraní `awdl0` (Apple Wireless Direct Link — AirDrop, Handoff, Sidecar) periodicky skenuje éter a způsobuje microstuttering ve streamu přes Wi-Fi. Řešení: `sudo ifconfig awdl0 down`. Problém: macOS si ho samo znovu zapíná, proto ho hlídá systémová služba (LaunchDaemon) `local.moonlight.awdl-off`, která každou sekundu AWDL vypne, pokud se zapnulo.
 
-**Vedlejší efekt:** dokud smyčka běží, nefunguje AirDrop, Handoff, Sidecar a část AirPlay. Po ukončení (CloseMoonlight) se vše vrátí.
+**Chování:**
+- Po startu Macu je AWDL **vypnuté** (služba se spustí sama, `RunAtLoad`).
+- **CloseMoonlight** službu zastaví a AWDL zapne → funguje AirDrop, Handoff, Sidecar.
+- Kterákoli **Open** zkratka službu znovu spustí → AWDL je zase vypnuté.
+- Po restartu Macu se vše vrátí do výchozího stavu (vypnuto).
+
+Streamy se po probuzení Macu **nespouštějí automaticky** — jen ručně z Docku.
+
+### Instalace služby (jednorázově, i po reinstalaci Macu)
+
+Plist je v repu ve složce `launchd/`:
+
+```bash
+sudo cp ~/moonlight-macos-automation/launchd/local.moonlight.awdl-off.plist /Library/LaunchDaemons/
+sudo chown root:wheel /Library/LaunchDaemons/local.moonlight.awdl-off.plist
+sudo chmod 644 /Library/LaunchDaemons/local.moonlight.awdl-off.plist
+sudo launchctl bootstrap system /Library/LaunchDaemons/local.moonlight.awdl-off.plist
+```
+
+Kontrola stavu: `ifconfig awdl0 | grep status` (vypnuto = `inactive`).
 
 ## 2. Jak se pozná, že stream opravdu běží
 
@@ -34,32 +53,33 @@ Skripty jsou ve složce `scripts/` tohoto repa. Po naklonování stačí:
 chmod +x ~/moonlight-macos-automation/scripts/*.sh
 ```
 
-### scripts/awdl-off.sh — spustí hlídací smyčku
+### scripts/awdl-off.sh — spustí službu držící AWDL vypnuté
 
 ```bash
 #!/bin/bash
-PIDFILE="/tmp/awdl_watchdog.pid"
-[ -f "$PIDFILE" ] && kill "$(cat "$PIDFILE")" 2>/dev/null
-nohup /bin/bash -c '
-while true; do
-  ifconfig awdl0 | grep -q "status: active" && ifconfig awdl0 down
-  sleep 1
-done
-' >/dev/null 2>&1 &
-echo $! > "$PIDFILE"
+# Spusti systemovou sluzbu, ktera drzi awdl0 vypnute (volano s pravy admina).
+PLIST="/Library/LaunchDaemons/local.moonlight.awdl-off.plist"
+launchctl bootstrap system "$PLIST" 2>/dev/null || launchctl kickstart system/local.moonlight.awdl-off
+ifconfig awdl0 down
 ```
 
-Pozn.: bez `sudo` — skript volá zkratka s „Run as Administrator", takže běží pod rootem. Smyčka nepřežije restart Macu (záměrně).
+Pozn.: bez `sudo` — skript volá zkratka s „Run as Administrator", takže běží pod rootem. `bootstrap` službu načte, pokud neběží; když už běží, vrátí chybu a `kickstart` jen ověří, že je spuštěná.
 
-### scripts/awdl-on.sh — ukončí smyčku a vrátí AWDL
+### scripts/awdl-on.sh — zastaví službu a vrátí AWDL
 
 ```bash
 #!/bin/bash
+# Zastavi sluzbu drzici AWDL vypnute a AWDL zapne (AirDrop, Handoff).
+# Po restartu Macu se sluzba spusti znovu sama (RunAtLoad) -> AWDL je zase vypnute.
+launchctl bootout system/local.moonlight.awdl-off 2>/dev/null
+# uklid pripadne stare smycky z drivejsi verze skriptu
 PIDFILE="/tmp/awdl_watchdog.pid"
 [ -f "$PIDFILE" ] && kill "$(cat "$PIDFILE")" 2>/dev/null
 rm -f "$PIDFILE"
 ifconfig awdl0 up
 ```
+
+Pozn.: `bootout` službu jen zastaví do příštího restartu (na rozdíl od `launchctl disable`, které by ji vypnulo natrvalo).
 
 ### scripts/moonlight-start.sh — oba streamy (dva monitory)
 
