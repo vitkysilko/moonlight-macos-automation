@@ -323,8 +323,15 @@ Pro automatické přepínání existuje utilita **SetDPI** (Windows CLI), jde na
    git clone https://github.com/vitkysilko/moonlight-macos-automation.git ~/moonlight-macos-automation
    chmod +x ~/moonlight-macos-automation/scripts/*.sh
    ```
-3. Zkratky: při stejném Apple ID se synchronizují přes iCloud samy; jinak import ze `shortcuts/`. V obou případech zkontrolovat cesty v Run Shell Script akcích.
-4. Add to Dock, nastavit ikony.
-5. Povolit oprávnění (Automation + Device Control and Data Access) pro dock appky.
-6. Git identita pro pushování: `git config --global user.name/user.email`, `gh auth login`.
-7. Otestovat všechny režimy + Close.
+3. Nainstalovat AWDL službu (po startu Macu drží AWDL vypnuté):
+   ```bash
+   sudo cp ~/moonlight-macos-automation/launchd/local.moonlight.awdl-off.plist /Library/LaunchDaemons/
+   sudo chown root:wheel /Library/LaunchDaemons/local.moonlight.awdl-off.plist
+   sudo chmod 644 /Library/LaunchDaemons/local.moonlight.awdl-off.plist
+   sudo launchctl bootstrap system /Library/LaunchDaemons/local.moonlight.awdl-off.plist
+   ```
+4. Zkratky: při stejném Apple ID se synchronizují přes iCloud samy; jinak import ze `shortcuts/`. V obou případech zkontrolovat cesty v Run Shell Script akcích.
+5. Add to Dock, nastavit ikony.
+6. Povolit oprávnění (Automation + Device Control and Data Access) pro dock appky.
+7. Git identita pro pushování: `git config --global user.name/user.email`, `gh auth login`.
+8. Otestovat všechny režimy + Close.
