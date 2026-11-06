@@ -210,11 +210,49 @@ osascript -e 'tell application "System Events" to tell (first process whose unix
 
 Bez přesunu by se fullscreen zapnul na monitoru, kde macOS okno zrovna otevře — nedeterministické.
 
-### scripts/moonlight-stop.sh — ukončení streamů
+### scripts/moonlight-stop.sh — ukončí vše (Mac i hosty)
+
+Volají ho všechny startovací skripty hned na začátku a také CloseMoonlight. Ukončuje dvě vrstvy:
+
+- **klienty na Macu**: všechny instance Moonlight i Moonlight2, včetně ručně otevřených oken,
+- **relace na hostech**: příkaz `quit` pro MSI i Apollo2, stejně jako tlačítko ■ v Moonlightu. Bez toho by relace na hostu běžela dál, například po odpojení Macu.
+
+Skript nečeká, až se proces `quit` sám ukončí (Moonlight po odpovědi hostu ještě několik sekund prohledává síť). Čeká jen na řádek `Quit response` v logu a proces pak zabije. Hosty se ukončují postupně, protože obě kopie Moonlightu sdílejí nastavení a paralelně si překážejí. Celé ukončení trvá zhruba 3–4 s; když je host vypnutý, skript to po 10 s vzdá.
 
 ```bash
 #!/bin/bash
-pkill -f "Contents/MacOS/Moonlight stream"
+# Ukonci VSE: vsechny instance Moonlight/Moonlight2 na Macu (vcetne rucne otevrenych)
+# a relace na obou hostech (MSI, Apollo2) - stejne jako tlacitko "stop" v Moonlightu.
+
+# 1) zavri vsechny klienty na Macu
+pkill -9 -f "Contents/MacOS/Moonlight"
+sleep 0.5
+
+# 2) ukonci relaci na hostu: pocka na "Quit response" v logu a proces hned zabije
+#    (jinak by Moonlight jeste nekolik sekund zbytecne prohledaval sit).
+#    Max 10 s - kdyz je host vypnuty, nevisi to.
+quit_host() {
+  local APP="$1" HOST="$2"
+  local BEFORE LOG="" C
+  BEFORE=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
+  "$APP" quit "$HOST" >/dev/null 2>&1 &
+  local PID=$!
+  for i in $(seq 1 20); do
+    kill -0 "$PID" 2>/dev/null || return 0
+    if [ -z "$LOG" ]; then
+      C=$(ls -t /tmp/Moonlight-*.log 2>/dev/null | head -1)
+      [ -n "$C" ] && [ "$C" != "$BEFORE" ] && LOG="$C"
+    fi
+    [ -n "$LOG" ] && grep -q "Quit response" "$LOG" 2>/dev/null && break
+    sleep 0.5
+  done
+  { kill -9 "$PID"; wait "$PID"; } 2>/dev/null
+}
+
+# postupne, ne paralelne (obe kopie Moonlightu sdileji nastaveni a paralelne si prekazi)
+quit_host /Applications/Moonlight.app/Contents/MacOS/Moonlight "MSI"
+quit_host /Applications/Moonlight2.app/Contents/MacOS/Moonlight "Apollo2"
+exit 0
 ```
 
 ## 4. Užitečné Moonlight CLI příkazy
